@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 const QUIZZES = [
   {
     id: 1,
-    village_en: 'PROSPERITY VILLAGE',
-    village_fr: 'VILLAGE PROSPÉRITÉ',
+    village_en: 'PROSPERITY',
+    village_fr: 'PROSPÉRITÉ',
     badge_en: 'Science Challenge',
     badge_fr: 'Défi Scientifique',
     icon: Atom,
@@ -25,8 +25,8 @@ const QUIZZES = [
   },
   {
     id: 2,
-    village_en: 'SOCIAL FAIRNESS VILLAGE',
-    village_fr: 'VILLAGE ÉQUITÉ SOCIALE',
+    village_en: 'SOCIAL FAIRNESS',
+    village_fr: 'ÉQUITÉ SOCIALE',
     badge_en: 'Europe Challenge',
     badge_fr: 'Défi Europe',
     icon: Users,
