@@ -342,9 +342,9 @@ export default function App() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full pointer-events-none mt-4 md:mt-8"
+          className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 md:bottom-12 md:left-12 pointer-events-none z-30"
       >
-        <div className="max-w-xs sm:max-w-sm border-l-4 border-eu-yellow pl-4 sm:pl-6 ml-2 sm:ml-4">
+        <div className="border-l-4 border-eu-yellow pl-4 sm:pl-6">
           <h2 className="text-white font-display font-bold text-2xl sm:text-3xl md:text-4xl leading-tight drop-shadow-xl uppercase whitespace-nowrap">
             9 MAY <br />
             <span className="text-white/80 text-lg sm:text-xl md:text-2xl font-semibold">10:00-18:00</span>
