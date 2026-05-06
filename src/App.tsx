@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ExternalLink, Atom, Users, Compass, Settings, Lock, Unlock, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import QRCode from 'react-qr-code';
 
 const QUIZZES = [
   {
@@ -318,17 +319,21 @@ export default function App() {
                     {card.data.subtitle}
                   </p>
 
-                  <div className="mt-8 sm:mt-auto pt-4">
+                  <div className="mt-8 sm:mt-auto pt-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
                     {/* Primary Action */}
                     <button
                       onClick={() => setActiveGameUrl(card.data.link)}
-                      className="w-full py-4 sm:py-5 bg-eu-yellow rounded-xl flex items-center justify-center gap-3 group/btn hover:bg-white transition-colors duration-300 shadow-[0_4px_20px_rgba(240,187,0,0.3)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.4)]"
+                      className="flex-1 py-4 sm:py-5 px-4 bg-eu-yellow rounded-xl flex items-center justify-center gap-3 group/btn hover:bg-white transition-colors duration-300 shadow-[0_4px_20px_rgba(240,187,0,0.3)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.4)]"
                     >
-                      <span className="text-[#002266] font-display font-black text-[15px] sm:text-[17px] tracking-wide">
+                      <span className="text-[#002266] font-display font-black text-[15px] sm:text-[17px] tracking-wide text-center">
                         {card.lang === 'EN' ? 'Start the English Quiz' : 'Démarrer le quiz en français'}
                       </span>
-                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#002266] group-hover/btn:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#002266] group-hover/btn:translate-x-1 transition-transform shrink-0" />
                     </button>
+                    {/* QR Code component */}
+                    <div className="hidden sm:flex items-center justify-center shrink-0 w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] bg-white p-1.5 rounded-xl border-4 border-eu-yellow border-opacity-40 shadow-lg mx-auto lg:mx-0">
+                      <QRCode value={card.data.link} size={100} style={{ width: '100%', height: '100%' }} />
+                    </div>
                   </div>
                 </div>
               </motion.article>
@@ -342,7 +347,7 @@ export default function App() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 md:bottom-12 md:left-12 pointer-events-none z-30"
+          className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 md:bottom-22 md:left-12 pointer-events-none z-30"
       >
         <div className="border-l-4 border-eu-yellow pl-4 sm:pl-6">
           <h2 className="text-white font-display font-bold text-2xl sm:text-3xl md:text-4xl leading-tight drop-shadow-xl uppercase whitespace-nowrap">
