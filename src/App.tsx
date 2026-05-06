@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ExternalLink, Atom, Users, Compass, Settings, Lock, Unlock, X } from 'lucide-react';
+import { ArrowRight, ExternalLink, Atom, Users, Compass, Settings, Lock, Unlock, X, Maximize, Minimize } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 
@@ -223,6 +223,28 @@ export default function App() {
 
   const [showSettings, setShowSettings] = useState(false);
   const [activeGameUrl, setActiveGameUrl] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   useEffect(() => {
     // Save to localStorage
@@ -359,14 +381,23 @@ export default function App() {
 
       </div>
 
-      {/* Settings Toggle Button */}
-      <button
-        onClick={() => setShowSettings(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-[#001A4C]/60 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all z-40 shadow-xl"
-        title="Settings"
-      >
-        <Settings className="w-5 h-5" />
-      </button>
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
+        <button
+          onClick={toggleFullscreen}
+          className="w-12 h-12 bg-[#001A4C]/60 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shadow-xl"
+          title="Toggle Fullscreen"
+        >
+          {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+        </button>
+        <button
+          onClick={() => setShowSettings(true)}
+          className="w-12 h-12 bg-[#001A4C]/60 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shadow-xl"
+          title="Settings"
+        >
+          <Settings className="w-5 h-5" />
+        </button>
+      </div>
 
       {/* Settings Modal */}
       <SettingsModal 
