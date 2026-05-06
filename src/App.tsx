@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ExternalLink, Atom, Users, Compass } from 'lucide-react';
+import { ArrowRight, ExternalLink, Atom, Users, Compass, Settings, Lock, Unlock, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const QUIZZES = [
@@ -116,14 +116,134 @@ function FloatingStars() {
   );
 }
 
+function SettingsModal({ isOpen, onClose, currentPage, setPage }: { isOpen: boolean, onClose: () => void, currentPage: number, setPage: (p: number) => void }) {
+  const [password, setPassword] = useState('');
+  const [unlocked, setUnlocked] = useState(false);
+
+  // Reset state when opened
+  useEffect(() => {
+    if (isOpen) {
+      setUnlocked(false);
+      setPassword('');
+    }
+  }, [isOpen]);
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === 'admin') {
+      setUnlocked(true);
+      setPassword('');
+    } else {
+      alert('Incorrect password');
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-[#002266] border border-white/20 rounded-3xl p-8 w-full max-w-sm relative shadow-2xl">
+        <button onClick={onClose} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
+          <X className="w-5 h-5" />
+        </button>
+        <h2 className="text-xl font-display font-bold text-white mb-6">Device Settings</h2>
+        
+        {!unlocked ? (
+          <form onSubmit={handleUnlock} className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-white/80 mb-2">
+              <Lock className="w-4 h-4" />
+              <span className="text-sm">Enter password to unlock</span>
+            </div>
+            <input 
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Password (admin)"
+              className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-eu-yellow focus:bg-white/20 transition-colors"
+            />
+            <button type="submit" className="w-full py-3 mt-2 bg-eu-yellow text-[#002266] font-bold rounded-xl hover:bg-white transition-colors shadow-lg">
+              Unlock Terminal
+            </button>
+          </form>
+        ) : (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 text-eu-yellow mb-2 bg-eu-yellow/10 px-4 py-2 rounded-lg border border-eu-yellow/20">
+              <Unlock className="w-4 h-4" />
+              <span className="text-sm font-bold">Terminal Unlocked</span>
+            </div>
+            <div className="flex flex-col gap-3">
+              <label className="text-white/80 text-sm mb-1">Select Default Village Screen:</label>
+              {[
+                { id: 0, label: 'Prosperity Village' },
+                { id: 1, label: 'Social Fairness' },
+                { id: 2, label: 'ERC Discovery' },
+              ].map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => {
+                    setPage(opt.id);
+                    onClose();
+                  }}
+                  className={`w-full flex items-center justify-between py-3 px-5 rounded-xl font-display font-bold text-sm text-left transition-all ${
+                    currentPage === opt.id 
+                      ? 'bg-eu-yellow text-[#002266] shadow-md scale-[1.02]' 
+                      : 'bg-white/5 border border-white/10 text-white/80 hover:bg-white/15'
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {currentPage === opt.id && <div className="w-2 h-2 rounded-full bg-[#002266]" />}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
-  const [lang, setLang] = useState<'EN' | 'FR'>('EN');
+  const [page, setPage] = useState<number>(() => {
+    // 1. Check URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get('page');
+    if (p !== null) {
+      const parsed = parseInt(p, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed <= 2) return parsed;
+    }
+    // 2. Fallback to localStorage
+    const saved = localStorage.getItem('selectedVillage');
+    if (saved !== null) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed <= 2) return parsed;
+    }
+    return 0; // Default
+  });
+
+  const [showSettings, setShowSettings] = useState(false);
+
+  useEffect(() => {
+    // Save to localStorage
+    localStorage.setItem('selectedVillage', page.toString());
+    // Update URL without reloading page
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('page', page.toString());
+    window.history.replaceState({}, '', newUrl.toString());
+  }, [page]);
+
+  const currentQuiz = QUIZZES[page];
+  const Icon = currentQuiz.icon;
+
+  const cards = [
+    { lang: 'EN' as const, data: currentQuiz.en, villageName: currentQuiz.village_en, badgeText: currentQuiz.badge_en, image: currentQuiz.image_en },
+    { lang: 'FR' as const, data: currentQuiz.fr, villageName: currentQuiz.village_fr, badgeText: currentQuiz.badge_fr, image: currentQuiz.image_fr },
+  ];
 
   return (
     <div className="min-h-screen bg-[#003399] font-sans overflow-x-hidden relative flex flex-col">
       {/* Main Poster Background */}
       <div 
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
         style={{ backgroundImage: "url('/europe-day-bg.png')" }}
       />
       {/* Subtle bottom gradient to ensure card text readability without muddying the top part */}
@@ -131,50 +251,30 @@ export default function App() {
       
       <FloatingStars />
 
-      {/* Header with Language Toggle */}
-      <header className="relative z-10 w-full p-4 sm:p-8 flex justify-end items-center">
-        <div className="bg-[#002266]/60 backdrop-blur-md rounded-full border border-white/20 p-1.5 flex gap-1 shadow-xl">
-          <button
-            onClick={() => setLang('EN')}
-            className={`px-6 py-2 rounded-full font-display font-bold text-sm transition-all duration-300 ${
-              lang === 'EN' ? 'bg-eu-yellow text-[#002266] shadow-md' : 'text-white/80 hover:text-white'
-            }`}
-          >
-            English
-          </button>
-          <button
-            onClick={() => setLang('FR')}
-            className={`px-6 py-2 rounded-full font-display font-bold text-sm transition-all duration-300 ${
-              lang === 'FR' ? 'bg-eu-yellow text-[#002266] shadow-md' : 'text-white/80 hover:text-white'
-            }`}
-          >
-            Français
-          </button>
-        </div>
-      </header>
-
       {/* Main Content Grid */}
-      <main className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-16 pt-[25vh] lg:pt-32 px-4 md:px-8 max-w-[1600px] w-full mx-auto mt-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {QUIZZES.map((quiz, i) => {
-            const data = quiz[lang.toLowerCase() as 'en' | 'fr'];
-            const villageName = lang === 'EN' ? quiz.village_en : quiz.village_fr;
-            const badgeText = lang === 'EN' ? quiz.badge_en : quiz.badge_fr;
-            const Icon = quiz.icon;
-
-            return (
+      <main className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-16 pt-[30vh] md:pt-[35vh] px-4 md:px-8 max-w-[1200px] w-full mx-auto">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={page}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch w-full mx-auto"
+          >
+            {cards.map((card, i) => (
               <motion.article
-                key={quiz.id}
+                key={card.lang}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="glass-card rounded-2xl md:rounded-[32px] overflow-hidden flex flex-col relative group hover-glow"
+                className="glass-card rounded-2xl md:rounded-[32px] overflow-hidden flex flex-col relative group hover-glow shadow-2xl"
               >
                 {/* Top Image Section */}
-                <div className="h-[200px] sm:h-[220px] lg:h-[260px] relative shrink-0 overflow-hidden">
+                <div className="h-[250px] sm:h-[300px] lg:h-[360px] relative shrink-0 overflow-hidden">
                   <div 
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-80"
-                    style={{ backgroundImage: `url(${lang === 'EN' ? quiz.image_en : quiz.image_fr})` }}
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-90"
+                    style={{ backgroundImage: `url(${card.image})` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#002B80]/95 via-[#002B80]/40 to-transparent opacity-90 mix-blend-multiply" />
                   
@@ -183,64 +283,57 @@ export default function App() {
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow" />
                   </div>
                   <div className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-white/90 backdrop-blur-md rounded-full px-3 py-1 sm:px-4 sm:py-1.5 flex items-center shadow-lg">
-                    <span className="text-[#002266] font-display font-bold text-[10px] sm:text-xs tracking-wide">{badgeText}</span>
+                    <span className="text-[#002266] font-display font-bold text-[10px] sm:text-xs tracking-wide">{card.badgeText}</span>
                   </div>
                 </div>
 
                 {/* Bottom Content Section */}
                 <div className="p-6 md:p-8 flex-1 flex flex-col bg-gradient-to-b from-[#002B80]/95 to-[#001A4C]/95 backdrop-blur-md">
                   <h3 className="text-eu-yellow font-display font-black text-[11px] sm:text-sm tracking-widest uppercase mb-3 sm:mb-4">
-                    {villageName}
+                    {card.villageName}
                   </h3>
                   <h2 className="font-display font-extrabold text-[22px] sm:text-[28px] leading-tight text-white mb-2 drop-shadow-md">
-                    {data.title}
+                    {card.data.title}
                   </h2>
                   <p className="text-white/80 font-sans text-sm font-medium mb-6 sm:mb-auto">
-                    {data.subtitle}
+                    {card.data.subtitle}
                   </p>
 
-                  <div className="mt-auto pt-2 space-y-3 sm:space-y-4">
+                  <div className="mt-8 sm:mt-auto pt-4">
                     {/* Primary Action */}
                     <a
-                      href={data.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-3 sm:py-4 bg-eu-yellow rounded-xl flex items-center justify-center gap-2 group/btn hover:bg-white transition-colors duration-300 shadow-[0_4px_20px_rgba(240,187,0,0.3)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.4)]"
+                      href={card.data.link}
+                      className="w-full py-4 sm:py-5 bg-eu-yellow rounded-xl flex items-center justify-center gap-3 group/btn hover:bg-white transition-colors duration-300 shadow-[0_4px_20px_rgba(240,187,0,0.3)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.4)]"
                     >
-                      <span className="text-[#002266] font-display font-black text-[13px] sm:text-[15px] tracking-wide">
-                        {lang === 'EN' ? 'Start the English Quiz' : 'Démarrer le quiz en français'}
+                      <span className="text-[#002266] font-display font-black text-[15px] sm:text-[17px] tracking-wide">
+                        {card.lang === 'EN' ? 'Start the English Quiz' : 'Démarrer le quiz en français'}
                       </span>
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#002266] group-hover/btn:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#002266] group-hover/btn:translate-x-1 transition-transform" />
                     </a>
-
-                    {/* Secondary Languages */}
-                    <div className="flex gap-3 sm:gap-4">
-                      <a
-                        href={quiz.en.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 py-2.5 sm:py-3 px-4 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 group/sub"
-                      >
-                        <span className="font-display font-bold text-white text-[10px] sm:text-xs tracking-widest">EN</span>
-                        <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/50 group-hover/sub:text-white transition-colors" />
-                      </a>
-                      <a
-                        href={quiz.fr.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 py-2.5 sm:py-3 px-4 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 group/sub"
-                      >
-                        <span className="font-display font-bold text-white text-[10px] sm:text-xs tracking-widest">FR</span>
-                        <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/50 group-hover/sub:text-white transition-colors" />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </motion.article>
-            );
-          })}
-        </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </main>
+
+      {/* Settings Toggle Button */}
+      <button
+        onClick={() => setShowSettings(true)}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-[#001A4C]/60 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all z-40 shadow-xl"
+        title="Settings"
+      >
+        <Settings className="w-5 h-5" />
+      </button>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        currentPage={page}
+        setPage={setPage}
+      />
     </div>
   );
 }
