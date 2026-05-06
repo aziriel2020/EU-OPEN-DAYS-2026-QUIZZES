@@ -221,6 +221,7 @@ export default function App() {
   });
 
   const [showSettings, setShowSettings] = useState(false);
+  const [activeGameUrl, setActiveGameUrl] = useState<string | null>(null);
 
   useEffect(() => {
     // Save to localStorage
@@ -273,16 +274,16 @@ export default function App() {
                 {/* Top Image Section */}
                 <div className="h-[250px] sm:h-[300px] lg:h-[360px] relative shrink-0 overflow-hidden">
                   <div 
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-90"
+                    className="absolute inset-0 bg-contain bg-no-repeat bg-center transition-transform duration-700 group-hover:scale-105 opacity-90"
                     style={{ backgroundImage: `url(${card.image})` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#002B80]/95 via-[#002B80]/40 to-transparent opacity-90 mix-blend-multiply" />
                   
                   {/* Image Overlays */}
-                  <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md bg-white/10 group-hover:bg-eu-yellow/20 transition-colors">
+                  <div className="absolute top-8 left-6 sm:top-10 sm:left-8 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md bg-white/10 group-hover:bg-eu-yellow/20 transition-colors">
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow" />
                   </div>
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-white/90 backdrop-blur-md rounded-full px-3 py-1 sm:px-4 sm:py-1.5 flex items-center shadow-lg">
+                  <div className="absolute top-8 right-6 sm:top-10 sm:right-8 bg-white/90 backdrop-blur-md rounded-full px-3 py-1 sm:px-4 sm:py-1.5 flex items-center shadow-lg">
                     <span className="text-[#002266] font-display font-bold text-[10px] sm:text-xs tracking-wide">{card.badgeText}</span>
                   </div>
                 </div>
@@ -301,15 +302,15 @@ export default function App() {
 
                   <div className="mt-8 sm:mt-auto pt-4">
                     {/* Primary Action */}
-                    <a
-                      href={card.data.link}
+                    <button
+                      onClick={() => setActiveGameUrl(card.data.link)}
                       className="w-full py-4 sm:py-5 bg-eu-yellow rounded-xl flex items-center justify-center gap-3 group/btn hover:bg-white transition-colors duration-300 shadow-[0_4px_20px_rgba(240,187,0,0.3)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.4)]"
                     >
                       <span className="text-[#002266] font-display font-black text-[15px] sm:text-[17px] tracking-wide">
                         {card.lang === 'EN' ? 'Start the English Quiz' : 'Démarrer le quiz en français'}
                       </span>
                       <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#002266] group-hover/btn:translate-x-1 transition-transform" />
-                    </a>
+                    </button>
                   </div>
                 </div>
               </motion.article>
@@ -334,6 +335,39 @@ export default function App() {
         currentPage={page}
         setPage={setPage}
       />
+
+      {/* Fullscreen Game Overlay */}
+      <AnimatePresence>
+        {activeGameUrl && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] bg-white flex flex-col"
+          >
+            {/* Top Bar for Navigation */}
+            <div className="absolute top-0 left-0 w-full p-4 pointer-events-none z-[110] flex items-start">
+              <motion.button
+                onClick={() => setActiveGameUrl(null)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="pointer-events-auto bg-[#002266] text-white hover:text-eu-yellow transition-colors w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-white/20 ml-2 mt-2 group"
+              >
+                <ArrowRight className="w-6 h-6 sm:w-7 sm:h-7 rotate-180 group-hover:-translate-x-1 transition-transform" />
+              </motion.button>
+            </div>
+            <iframe 
+              src={activeGameUrl}
+              className="w-full h-full border-0 absolute inset-0 z-[105]"
+              allow="autoplay; fullscreen"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
