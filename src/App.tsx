@@ -130,7 +130,7 @@ function SettingsModal({ isOpen, onClose, currentPage, setPage }: { isOpen: bool
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin') {
+    if (password === 'eudays2026') {
       setUnlocked(true);
       setPassword('');
     } else {
@@ -252,17 +252,35 @@ export default function App() {
       
       <FloatingStars />
 
-      {/* Main Content Grid */}
-      <main className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-16 pt-[30vh] md:pt-[35vh] px-4 md:px-8 max-w-[1200px] w-full mx-auto">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={page}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch w-full mx-auto"
-          >
+      {/* Main Content & Text Overlays */}
+      <div className="relative z-10 flex flex-col justify-between min-h-screen p-6 sm:p-8 md:p-12">
+        
+        {/* Top Text (EUROPE DAY) */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="w-full pointer-events-none mb-8"
+        >
+          <div className="max-w-md">
+            <h1 className="text-white font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight drop-shadow-2xl">
+              EUROPE <br />
+              <span className="text-eu-yellow">DAY 2026</span>
+            </h1>
+          </div>
+        </motion.div>
+
+        {/* Main Content Grid */}
+        <main className="flex-1 flex flex-col justify-center w-full max-w-[1000px] xl:max-w-[1200px] mx-auto py-8">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={page}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch w-full mx-auto shadow-2xl rounded-3xl z-20 relative pointer-events-auto"
+            >
             {cards.map((card, i) => (
               <motion.article
                 key={card.lang}
@@ -318,6 +336,23 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Bottom Text (9 MAY) */}
+      <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="w-full pointer-events-none mt-4 md:mt-8"
+      >
+        <div className="max-w-xs sm:max-w-sm border-l-4 border-eu-yellow pl-4 sm:pl-6 ml-2 sm:ml-4">
+          <h2 className="text-white font-display font-bold text-2xl sm:text-3xl md:text-4xl leading-tight drop-shadow-xl uppercase whitespace-nowrap">
+            9 MAY <br />
+            <span className="text-white/80 text-lg sm:text-xl md:text-2xl font-semibold">10:00-18:00</span>
+          </h2>
+        </div>
+      </motion.div>
+
+      </div>
 
       {/* Settings Toggle Button */}
       <button
