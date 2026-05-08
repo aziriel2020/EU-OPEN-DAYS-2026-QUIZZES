@@ -278,20 +278,34 @@ export default function App() {
       {/* Main Content & Text Overlays */}
       <div className="relative z-10 flex flex-col justify-between min-h-screen p-6 sm:p-8 md:p-12">
         
-        {/* Top Text (EUROPE DAY) */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="w-full pointer-events-none mb-8"
-        >
-          <div className="max-w-md">
+        {/* Top Text Group */}
+        <div className="w-full pointer-events-none mb-4 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-12">
+          {/* EUROPE DAY text */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             <h1 className="text-white font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight drop-shadow-2xl">
               EUROPE <br />
               <span className="text-eu-yellow">DAY 2026</span>
             </h1>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          {/* 9 MAY text */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="border-l-[3px] border-eu-yellow pl-4 sm:pl-6 max-h-[4rem] sm:max-h-[5rem] flex flex-col justify-center">
+              <h2 className="text-white font-display font-bold text-2xl sm:text-3xl lg:text-4xl leading-tight drop-shadow-xl uppercase whitespace-nowrap">
+                9 MAY <br />
+                <span className="text-white/90 text-sm sm:text-base lg:text-lg font-medium tracking-wide">10:00-18:00</span>
+              </h2>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Main Content Grid */}
         <main className="flex-1 flex flex-col justify-center w-full max-w-[1000px] xl:max-w-[1200px] mx-auto py-8">
@@ -364,20 +378,7 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Bottom Text (9 MAY) */}
-      <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 md:bottom-22 md:left-12 pointer-events-none z-30"
-      >
-        <div className="border-l-4 border-eu-yellow pl-4 sm:pl-6">
-          <h2 className="text-white font-display font-bold text-2xl sm:text-3xl md:text-4xl leading-tight drop-shadow-xl uppercase whitespace-nowrap">
-            9 MAY <br />
-            <span className="text-white/80 text-lg sm:text-xl md:text-2xl font-semibold">10:00-18:00</span>
-          </h2>
-        </div>
-      </motion.div>
+
 
       </div>
 
