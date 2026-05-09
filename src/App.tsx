@@ -56,12 +56,12 @@ const QUIZZES = [
     en: {
       title: 'Ready to Explore the Frontiers of Science?',
       subtitle: 'Frontiers of Science',
-      link: 'https://kahoot.it/challenge/09519407?challenge-id=2a71d7ed-52c5-47d9-a84e-ddf6d0040bd7_1778006021611',
+      link: 'https://kahoot.it/challenge/08421626?challenge-id=2a71d7ed-52c5-47d9-a84e-ddf6d0040bd7_1778311345610',
     },
     fr: {
       title: 'Prêt(e) à Explorer les Frontières de la Science ?',
       subtitle: 'Frontières de la Science',
-      link: 'https://kahoot.it/challenge/0516471?challenge-id=2a71d7ed-52c5-47d9-a84e-ddf6d0040bd7_1778005878250',
+      link: 'https://kahoot.it/challenge/04070505?challenge-id=2a71d7ed-52c5-47d9-a84e-ddf6d0040bd7_1778311406511',
     },
   },
 ];
